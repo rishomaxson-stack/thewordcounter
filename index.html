@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeoWord • Futuristic Word Counter</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: radial-gradient(circle at top, #0f2027, #000 70%);
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --accent: #22d3ee;
+      --accent-soft: rgba(34, 211, 238, 0.3);
+      --text-main: #e5e7eb;
+      --text-muted: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+    }
+
+    .card {
+      width: 95%;
+      max-width: 950px;
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      border-radius: 22px;
+      padding: 28px;
+      border: 1px solid var(--accent-soft);
+      box-shadow: 0 0 45px rgba(0,255,255,0.18);
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      letter-spacing: 1px;
+      color: var(--accent);
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(2,6,23,0.8);
+      border: 1px solid var(--accent-soft);
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    textarea {
+      width: 100%;
+      height: 230px;
+      background: rgba(2,6,23,0.95);
+      border: 1px solid var(--accent-soft);
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 16px;
+      color: var(--text-main);
+      outline: none;
+      resize: none;
+    }
+
+    textarea::placeholder { color: var(--text-muted); }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 140px;
+      background: rgba(2,6,23,0.9);
+      border: 1px solid var(--accent-soft);
+      border-radius: 14px;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--accent);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover { background: rgba(34,211,238,0.15); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .stat {
+      background: rgba(2,6,23,0.85);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      border: 1px solid var(--accent-soft);
+    }
+
+    .stat h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .stat p {
+      font-size: 12px;
+      margin-top: 4px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <header>
+      <h1>NEOWORD</h1>
+      <div class="theme-toggle" onclick="toggleTheme()">Switch Theme</div>
+    </header>
+
+    <textarea id="text" placeholder="Start typing... your stats update in real time"></textarea>
+
+    <div class="toolbar">
+      <div class="btn" onclick="copyStats()">📋 Copy Stats</div>
+      <div class="btn" onclick="clearText()">🗑 Clear Text</div>
+      <div class="btn" id="readingTime">⏱ Reading Time: 0 min</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><h2 id="words">0</h2><p>WORDS</p></div>
+      <div class="stat"><h2 id="characters">0</h2><p>CHARACTERS</p></div>
+      <div class="stat"><h2 id="sentences">0</h2><p>SENTENCES</p></div>
+      <div class="stat"><h2 id="paragraphs">0</h2><p>PARAGRAPHS</p></div>
+    </div>
+
+    <footer>
+      NeoWord • Futuristic • Professional • Built for creators
+    </footer>
+  </div>
+
+  <script>
+    const textArea = document.getElementById('text');
+    const wordsEl = document.getElementById('words');
+    const charsEl = document.getElementById('characters');
+    const sentencesEl = document.getElementById('sentences');
+    const paragraphsEl = document.getElementById('paragraphs');
+    const readingTimeEl = document.getElementById('readingTime');
+
+    let darkMode = true;
+
+    textArea.addEventListener('input', () => {
+      const text = textArea.value.trim();
+
+      const wordCount = text ? text.split(/\s+/).length : 0;
+      wordsEl.textContent = wordCount;
+      charsEl.textContent = textArea.value.length;
+      sentencesEl.textContent = text ? text.split(/[.!?]+/).filter(s => s.trim()).length : 0;
+      paragraphsEl.textContent = text ? text.split(/\n+/).filter(p => p.trim()).length : 0;
+
+      const readingMinutes = Math.max(1, Math.ceil(wordCount / 200));
+      readingTimeEl.textContent = `⏱ Reading Time: ${readingMinutes} min`;
+
+      localStorage.setItem('savedText', textArea.value);
+    });
+
+    function copyStats() {
+      const stats = `Words: ${wordsEl.textContent}\nCharacters: ${charsEl.textContent}\nSentences: ${sentencesEl.textContent}\nParagraphs: ${paragraphsEl.textContent}`;
+      navigator.clipboard.writeText(stats);
+      alert('Stats copied to clipboard');
+    }
+
+    function clearText() {
+      textArea.value = '';
+      textArea.dispatchEvent(new Event('input'));
+    }
+
+    function toggleTheme() {
+      darkMode = !darkMode;
+      document.documentElement.style.setProperty('--bg-main', darkMode ? 'radial-gradient(circle at top, #0f2027, #000 70%)' : 'linear-gradient(135deg, #f8fafc, #e2e8f0)');
+      document.documentElement.style.setProperty('--card-bg', darkMode ? 'rgba(15,23,42,0.75)' : '#ffffff');
+      document.documentElement.style.setProperty('--text-main', darkMode ? '#e5e7eb' : '#020617');
+      document.documentElement.style.setProperty('--text-muted', darkMode ? '#94a3b8' : '#475569');
+    }
+
+    window.onload = () => {
+      const saved = localStorage.getItem('savedText');
+      if (saved) {
+        textArea.value = saved;
+        textArea.dispatchEvent(new Event('input'));
+      }
+    };
+  </script>
+
+</body>
+</html>
